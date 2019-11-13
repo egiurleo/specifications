@@ -3,7 +3,7 @@ Driver Transactions Specification
 =================================
 
 :Spec Title: Driver Transactions Specification
-:Spec Version: 1.5.4
+:Spec Version: 1.6.0
 :Author: Shane Harvey
 :Spec Lead: A\. Jesse Jiryu Davis
 :Advisory Group: A\. Jesse Jiryu Davis, Matt Broadstone, Robert Stam, Jeff Yemin, Spencer Brody
@@ -12,7 +12,7 @@ Driver Transactions Specification
 :Status: Accepted (Could be Draft, Accepted, Rejected, Final, or Replaced)
 :Type: Standards
 :Minimum Server Version: 4.0 (The minimum server version this spec applies to)
-:Last Modified: 2019-10-21
+:Last Modified: 2019-11-13
 
 .. contents::
 
@@ -904,8 +904,8 @@ which causes the server to abort the transaction. Retrying a transaction
 that causes a DuplicateKeyError will again (likely) abort the
 transaction, therefore such an error is not labeled "transient."
 
-UnknownTransactionCommitResult
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+RetryableWriteError
+~~~~~~~~~~~~~~~~~~~
 
 The commitTransaction command is considered a retryable write. The
 driver will automatically retry the commitTransaction once after a
@@ -914,32 +914,36 @@ retry attempt of a commitTransaction may again fail with a retryable
 error. In that case, both the driver and the application do not know the
 state of the transaction.
 
-The driver MUST add the "UnknownTransactionCommitResult" error label when
-commitTransaction fails with a server selection error, network error, retryable
-writes error, MaxTimeMSExpired error, or write concern failed / timeout. (See
-`A server selection error is labeled UnknownTransactionCommitResult`_
-for justification.) The approximate meaning of the
-UnknownTransactionCommitResult label is, "We don't know if your commit
+The driver MUST add the "RetryableWriteError" error label when
+commitTransaction fails with a server selection error
+(see `A server selection error is labeled RetryableWriteError`_ for
+justification), MaxTimeMSExpired error, or write concern failed / timeout,
+in addition to the retryable errors defined in the Retryable Writes specification
+(see `Determining Retryable Errors`_).
+
+In this case, the approximate meaning of the
+RetryableWriteError label is, "We don't know if your commit
 has satisfied the provided write concern." The only write concern errors
-that are not labeled with "UnknownTransactionCommitResult" are
+that are not labeled with "RetryableWriteError" are
 CannotSatisfyWriteConcern (which will be renamed to the more precise
 UnsatisfiableWriteConcern in 4.2, while preserving the current error
 code) and UnknownReplWriteConcern. These errors codes mean that the
 provided write concern is not valid and therefore a retry attempt would
 fail with the same error.
 
-In the case that the commitTransaction fails with a retryable writes error,
-that error will have both an UnknownTransactionCommitResult label and
-a RetryableWriteError label. This is currently the only scenario in which
-an error can be assigned two error labels.
+These errors were previously given the "UnknownTransactionCommitResult"
+error label. See `Why replace UnknownTransactionCommitResult label
+with RetryableWriteError label`_ for justification.
+
+.. _Determining Retryable Errors: ../retryable-writes/retryable-writes.rst#determining-retryable-errors
 
 Retrying commitTransaction
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If an exception with this label is thrown, an application can safely
+If an exception with a RetryableWriteError label is thrown, an application can safely
 call commitTransaction again. If this attempt succeeds it means the
 transaction has committed with the provided write concern. If this
-attempt fails it may also have the "UnknownTransactionCommitResult" error
+attempt fails it may also have the "RetryableWriteError" error
 label. For example:
 
 .. code:: python
@@ -954,7 +958,7 @@ label. For example:
                         s.commit_transaction()
                         break
                     except (OperationFailure, ConnectionFailure) as exc:
-                        if exc.has_error_label("UnknownTransactionCommitResult"):
+                        if exc.has_error_label("RetryableWriteError"):
                             print("Unknown commit result, retrying...")
                             continue
                         raise
@@ -1260,15 +1264,14 @@ aggregate with a write stage (e.g. ``$out``, ``$merge``). In general, our
 specifications should stop defining different behaviors based on the contents of
 commands.
 
-A server selection error is labeled UnknownTransactionCommitResult
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A server selection error is labeled RetryableWriteError
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Drivers add the "UnknownTransactionCommitResult" to a server selection
+Drivers add the "RetryableWriteError" to a server selection
 error from commitTransaction, even if this is the first attempt to send
-commitTransaction. It is true in this case that the driver knows the
-result: the transaction is definitely not committed. However, the
-"UnknownTransactionCommitResult" label properly communicates to the
-application that calling commitTransaction again may succeed.
+commitTransaction. In this case, the "RetryableWriteError" label
+communicates to the application that calling commitTransaction
+again may succeed.
 
 FAQ
 ---
@@ -1385,9 +1388,29 @@ durable, which achieves the primary objective of avoiding duplicate commits.
 
 .. _writeConcernMajorityJournalDefault: https://docs.mongodb.com/manual/reference/replica-configuration/#rsconf.writeConcernMajorityJournalDefault
 
+Why replace UnknownTransactionCommitResult label with RetryableWriteError label?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Previous versions of this specification had the drivers add the
+UnknownTransactionCommitResult error label to retryable write errors, server selection errors,
+MaxTimeMSExpired errors, and write concern errors that occured during commitTransaction.
+This error label indicated that the driver or the application could retry the commit.
+
+When the RetryableWriteError label was introduced, there were cases where errors that occurred during
+commitTransaction could receive both a RetryableWriteError label and an UnknownTransactionCommitResult
+label. Both of these error labels essentially indicate that the commit should be retried, so the
+UnknownTransactionCommitResult label was deprecated in favor of the more universal
+RetryableWriteError label.
+
+In version 3.6 of the Retryable Writes specification, the definition of a retryable
+error was changed so that any error with the RetryableWriteError label was
+considered retryable.
+
 **Changelog**
 -------------
 
+:2019-11-13: Replace UnknownTransactionCommitResult label with
+             RetryableWriteError label.
 :2019-10-21: Specify that a commit error can have two error labels
 :2019-07-30: Clarify when the cached recoveryToken should be cleared.
 :2019-06-10: Client-side errors must not change transaction state.
