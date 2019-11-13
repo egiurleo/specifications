@@ -531,7 +531,7 @@ Drivers MAY implement an error label API similar to the following:
     try:
         session.commit_transaction()
     except (OperationFailure, ConnectionFailure) as exc:
-        if exc.has_error_label("UnknownTransactionCommitResult"):
+        if exc.has_error_label("RetryableWriteError"):
             print("tried to commit, don't know the outcome")
 
 Drivers MAY expose the list of all error labels for an exception object.
@@ -814,8 +814,8 @@ abortTransaction (or commitTransaction) does not block waiting on a server
 that is unreachable.
 
 Additionally, drivers MUST unpin a ClientSession when any individual
-commitTransaction command attempt fails with an UnknownTransactionCommitResult
-error label. In cases where the UnknownTransactionCommitResult causes an
+commitTransaction command attempt fails with an RetryableWriteError
+error label. In cases where the RetryableWriteError causes an
 automatic retry attempt, drivers MUST unpin the ClientSession before performing
 server selection for the retry.
 
