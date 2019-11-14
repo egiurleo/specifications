@@ -457,7 +457,7 @@
           "result": {
             "errorLabelsOmit": [
               "TransientTransactionError",
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ],
             "errorContains": "E11000"
           }
@@ -477,7 +477,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ]
           }
         },

@@ -142,7 +142,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ]
           }
         },
@@ -159,7 +159,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ]
           }
         }
@@ -204,7 +204,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ]
           }
         },

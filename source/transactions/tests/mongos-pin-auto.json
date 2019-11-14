@@ -70,7 +70,7 @@
           "result": {
             "errorLabelsOmit": [
               "TransientTransactionError",
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ],
             "errorCodeName": "Interrupted"
           }
@@ -222,7 +222,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ]
           }
         },

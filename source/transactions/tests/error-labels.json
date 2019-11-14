@@ -41,7 +41,7 @@
           "result": {
             "errorLabelsOmit": [
               "TransientTransactionError",
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ],
             "errorContains": "E11000"
           }
@@ -134,7 +134,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ]
           }
         },
@@ -223,7 +223,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ]
           }
         },
@@ -312,7 +312,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ]
           }
         },
@@ -408,8 +408,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "RetryableWriteError",
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ]
           }
         }
@@ -497,7 +496,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ]
           }
         },
@@ -512,7 +511,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ]
           }
         },
@@ -534,7 +533,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ]
           }
         },
@@ -550,7 +549,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ]
           }
         },
@@ -664,7 +663,7 @@
       }
     },
     {
-      "description": "add RetryableWriteError and UnknownTransactionCommitResult labels to connection errors",
+      "description": "add RetryableWriteError labels to connection errors",
       "failPoint": {
         "configureFailPoint": "failCommand",
         "mode": {
@@ -700,8 +699,7 @@
           "object": "session0",
           "result": {
             "errorLabelsContain": [
-              "RetryableWriteError",
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ],
             "errorLabelsOmit": [
               "TransientTransactionError"
@@ -803,7 +801,7 @@
       }
     },
     {
-      "description": "add RetryableWriteError and UnknownTransactionCommitResult labels to retryable commit errors",
+      "description": "add RetryableWriteError labels to retryable commit errors",
       "failPoint": {
         "configureFailPoint": "failCommand",
         "mode": {
@@ -839,8 +837,7 @@
           "object": "session0",
           "result": {
             "errorLabelsContain": [
-              "RetryableWriteError",
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ],
             "errorLabelsOmit": [
               "TransientTransactionError"
@@ -942,7 +939,7 @@
       }
     },
     {
-      "description": "add RetryableWriteError and UnknownTransactionCommitResult labels to writeConcernError ShutdownInProgress",
+      "description": "add RetryableWriteError labels to writeConcernError ShutdownInProgress",
       "failPoint": {
         "configureFailPoint": "failCommand",
         "mode": {
@@ -988,8 +985,7 @@
           "object": "session0",
           "result": {
             "errorLabelsContain": [
-              "RetryableWriteError",
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ],
             "errorLabelsOmit": [
               "TransientTransactionError"
@@ -1093,7 +1089,7 @@
       }
     },
     {
-      "description": "add UnknownTransactionCommitResult label to writeConcernError WriteConcernFailed",
+      "description": "add RetryableWriteError label to writeConcernError WriteConcernFailed",
       "failPoint": {
         "configureFailPoint": "failCommand",
         "mode": {
@@ -1139,10 +1135,9 @@
           "object": "session0",
           "result": {
             "errorLabelsContain": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ],
             "errorLabelsOmit": [
-              "RetryableWriteError",
               "TransientTransactionError"
             ]
           }
@@ -1225,7 +1220,7 @@
       }
     },
     {
-      "description": "add UnknownTransactionCommitResult label to writeConcernError WriteConcernFailed with wtimeout",
+      "description": "add RetryableWriteError label to writeConcernError WriteConcernFailed with wtimeout",
       "failPoint": {
         "configureFailPoint": "failCommand",
         "mode": {
@@ -1275,10 +1270,9 @@
           "object": "session0",
           "result": {
             "errorLabelsContain": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ],
             "errorLabelsOmit": [
-              "RetryableWriteError",
               "TransientTransactionError"
             ]
           }
@@ -1361,7 +1355,7 @@
       }
     },
     {
-      "description": "omit UnknownTransactionCommitResult label from writeConcernError UnsatisfiableWriteConcern",
+      "description": "omit RetryableWriteError label from writeConcernError UnsatisfiableWriteConcern",
       "failPoint": {
         "configureFailPoint": "failCommand",
         "mode": {
@@ -1408,8 +1402,7 @@
           "result": {
             "errorLabelsOmit": [
               "RetryableWriteError",
-              "TransientTransactionError",
-              "UnknownTransactionCommitResult"
+              "TransientTransactionError"
             ]
           }
         }
@@ -1468,7 +1461,7 @@
       }
     },
     {
-      "description": "omit UnknownTransactionCommitResult label from writeConcernError UnknownReplWriteConcern",
+      "description": "omit RetryableWriteError label from writeConcernError UnknownReplWriteConcern",
       "failPoint": {
         "configureFailPoint": "failCommand",
         "mode": {
@@ -1515,8 +1508,7 @@
           "result": {
             "errorLabelsOmit": [
               "RetryableWriteConcern",
-              "TransientTransactionError",
-              "UnknownTransactionCommitResult"
+              "TransientTransactionError"
             ]
           }
         }
@@ -1575,7 +1567,7 @@
       }
     },
     {
-      "description": "do not add UnknownTransactionCommitResult label to MaxTimeMSExpired inside transactions",
+      "description": "do not add RetryableWriteError label to MaxTimeMSExpired inside transactions",
       "failPoint": {
         "configureFailPoint": "failCommand",
         "mode": {
@@ -1623,7 +1615,6 @@
           "result": {
             "errorLabelsOmit": [
               "RetryableWriteError",
-              "UnknownTransactionCommitResult",
               "TransientTransactionError"
             ]
           }
@@ -1705,7 +1696,7 @@
       }
     },
     {
-      "description": "add UnknownTransactionCommitResult label to MaxTimeMSExpired",
+      "description": "add RetryableWriteError label to MaxTimeMSExpired",
       "failPoint": {
         "configureFailPoint": "failCommand",
         "mode": {
@@ -1749,10 +1740,9 @@
           "object": "session0",
           "result": {
             "errorLabelsContain": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ],
             "errorLabelsOmit": [
-              "RetryableWriteError",
               "TransientTransactionError"
             ]
           }
@@ -1837,7 +1827,7 @@
       }
     },
     {
-      "description": "add UnknownTransactionCommitResult label to writeConcernError MaxTimeMSExpired",
+      "description": "add RetryableWriteError label to writeConcernError MaxTimeMSExpired",
       "failPoint": {
         "configureFailPoint": "failCommand",
         "mode": {
@@ -1884,10 +1874,9 @@
           "object": "session0",
           "result": {
             "errorLabelsContain": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ],
             "errorLabelsOmit": [
-              "RetryableWriteError",
               "TransientTransactionError"
             ]
           }

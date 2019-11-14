@@ -982,7 +982,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ]
           }
         },
@@ -1127,7 +1127,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ]
           }
         },
@@ -1139,7 +1139,7 @@
               "TransientTransactionError"
             ],
             "errorLabelsOmit": [
-              "UnknownTransactionCommitResult"
+              "RetryableWriteError"
             ],
             "errorCodeName": "NoSuchTransaction"
           }
