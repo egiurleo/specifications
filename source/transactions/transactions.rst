@@ -1310,6 +1310,8 @@ The following commands are allowed inside transactions:
 Why don’t drivers automatically retry commit after a write concern timeout error?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+TODO: this section will no longer be relevant
+
 A write concern timeout error indicates that the command succeeded but
 failed to meet the specified writeConcern within the given time limit.
 Attempting to retry would implicitly double the application’s wtimeout
