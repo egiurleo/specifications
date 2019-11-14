@@ -123,11 +123,12 @@ drivers MUST enforce a 120-second timeout to limit retry behavior and safeguard
 applications from long-running (or infinite) retry loops. Drivers SHOULD use a
 monotonic clock to determine elapsed time.
 
-If an UnknownTransactionCommitResult error is encountered for a commit, the
-driver MUST retry the commit if and only if the error is not MaxTimeMSExpired
-and the retry timeout has not been exceeded. Otherwise, the driver MUST NOT
-retry the commit and allow ``withTransaction`` to propagate the error to its
-caller.
+If a retryable write error is encountered for a commit, the driver MUST retry
+the commit if and only if the error is not MaxTimeMSExpired and the retry
+timeout has not been exceeded. Otherwise, the driver MUST NOT retry the commit
+and allow ``withTransaction`` to propagate the error to its caller. (To
+understand what counts as a "retryable write error," see `Determining Retryable
+Errors`_ in the Retryable Writes specification.)
 
 If a TransientTransactionError is encountered at any point, the entire
 transaction may be retried. If the retry timeout has not been exceeded, the
@@ -139,7 +140,7 @@ document the risk of side effects from using a non-idempotent callback. If the
 retry timeout has been exceeded, drivers MUST NOT retry the transaction and
 allow ``withTransaction`` to propagate the error to its caller.
 
-If an error bearing neither the UnknownTransactionCommitResult nor the
+If an error bearing neither the RetryableWriteError label nor the
 TransientTransactionError label is encountered at any point, the driver MUST NOT
 retry and MUST allow ``withTransaction`` to propagate the error to its caller.
 
@@ -150,6 +151,7 @@ parameters or options as needed (e.g. user data to pass as a parameter to the
 callback).
 
 .. _CRUD: ../crud/crud.rst#deviations
+.. _Determining Retryable Errors: ../retryable-writes/retryable-writes.rst#determining-retryable-errors
 
 ~~~~~~~~~~~~~~~~~~~
 Sequence of Actions
@@ -186,7 +188,7 @@ This method should perform the following sequence of actions:
       the elapsed time of ``withTransaction`` is less than 120 seconds, jump
       back to step two.
 
-   c. If the callback's error includes a "UnknownTransactionCommitResult" label,
+   c. If the callback's error includes a "RetryableWriteError" label,
       the callback must have manually commited a transaction, propagate the
       callback's error to the caller of ``withTransaction`` and return
       immediately.
@@ -203,7 +205,7 @@ This method should perform the following sequence of actions:
 9. If ``commitTransaction`` reported an error:
 
    a. If the ``commitTransaction`` error includes a
-      "UnknownTransactionCommitResult" label and the error is not
+      "RetryableWriteError" label and the error is not
       MaxTimeMSExpired and the elapsed time of ``withTransaction`` is less
       than 120 seconds, jump back to step eight. We will trust
       ``commitTransaction`` to apply a majority write concern on
@@ -275,7 +277,7 @@ This method can be expressed by the following pseudo-code:
                      * {ok:1, writeConcernError: {code: 50, codeName: "MaxTimeMSExpired"}}
                      */
                     if (!isMaxTimeMSExpiredError(error) &&
-                        error.hasErrorLabel("UnknownTransactionCommitResult") &&
+                        error.hasErrorLabel("RetryableWriteError") &&
                         Date.now() - startTime < 120000) {
                         continue retryCommit;
                     }
@@ -342,7 +344,7 @@ An original design considered requiring the callback to accept a ClientSession
 as its first parameter. That could be superfluous for languages where the
 callback might already have access to ClientSession through its lexical scope.
 Instead, the spec simply requires that drivers ensure the callback will be able
-to access the ClientSession. 
+to access the ClientSession.
 
 Similarly, the specification does not concern itself with the return type of the
 callback function. If drivers allow the callback to return a value, they may
@@ -393,17 +395,16 @@ The commit is retried after a write concern timeout (i.e. wtimeout) error
 
 Per the Transactions specification, drivers internally retry
 ``commitTransaction`` once if it fails due to a retryable error (as defined in
-the `Retryable Writes`_ specification). Beyond that, applications may manually
-retry ``commitTransaction`` if it fails with any error bearing the
-`UnknownTransactionCommitResult`_ error label. This label is applied for the
+the `Retryable Writes`_ specification). However, there are other errors
+that qualify as retryable errors and are given the `RetryableWriteError`_
+label when they occur during a transaction. This label is applied for
 the following errors:
 
 .. _Retryable Writes: ../retryable-writes/retryable-writes.rst#terms
 
-.. _UnknownTransactionCommitResult: ../transactions/transactions.rst#unknowntransactioncommitresult
+.. RetryableWriteError: ../transactions/transactions.rst#retryablewriteerror
 
 - Server selection failure
-- Retryable error (as defined in the `Retryable Writes`_ specification)
 - Write concern failure or timeout (excluding UnsatisfiableWriteConcern and
   UnknownReplWriteConcern)
 - MaxTimeMSExpired errors, ie ``{ok:0, code: 50, codeName: "MaxTimeMSExpired"}``
@@ -413,13 +414,19 @@ A previous design for ``withTransaction`` retried for all of these errors
 *except* for write concern timeouts, so as not to exceed the user's original
 intention for ``wtimeout``. The current design of this specification no longer
 excludes write concern timeouts, and simply retries ``commitTransaction`` within
-its timeout period for all errors bearing the "UnknownTransactionCommitResult"
-label.
+its timeout period for all errors bearing the "RetryableWriteError" label.
 
 This change was made in light of the forthcoming Client-side Operations Timeout
 specification (see: `Future Work`_), which we expect will allow the current
 120-second timeout for ``withTransaction`` to be customized and also obviate the
 need for users to specify ``wtimeout``.
+
+Previous versions of this specification had these errors labeled with the
+"UnknownTransactionCommitResult" error label. See
+`Why replace UnknownTransactionCommitResult label with RetryableWriteError label?`_
+in the Transactions specification for more information.
+
+.. _Why replace UnknownTransactionCommitResult label with RetryableWriteError label?: ../transactions/transactions.rst#why-replace-unknowntransactioncommitresult-label-with-retryablewriteerror-label
 
 The commit is not retried after a MaxTimeMSExpired error
 --------------------------------------------------------
@@ -443,7 +450,7 @@ however, that puts the onus on avoiding very long (or infinite) retry loops on
 the application. We expect the most common cause of retry loops will be due to
 TransientTransactionErrors caused by write conflicts, as those can occur
 regularly in a healthy application, as opposed to
-UnknownTransactionCommitResult, which would typically be caused by an election. 
+RetryableWriteErrors, which would typically be caused by an election.
 
 In order to avoid blocking the application with infinite retry loops,
 ``withTransaction`` will cease retrying invocations of the callback or
