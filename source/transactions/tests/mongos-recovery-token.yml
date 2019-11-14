@@ -220,7 +220,7 @@ tests:
         object: session0
         result:
           errorLabelsContain: ["TransientTransactionError"]
-          errorLabelsOmit: ["UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteError"]
           errorCodeName: NoSuchTransaction
 
     expectations:

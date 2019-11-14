@@ -91,7 +91,7 @@ tests:
         result:
           errorCodeName: WriteConflict
           errorLabelsContain: ["TransientTransactionError"]
-          errorLabelsOmit: ["UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteError"]
       - name: commitTransaction
         object: session0
       - name: commitTransaction
@@ -99,7 +99,7 @@ tests:
         result:
           errorCodeName: NoSuchTransaction
           errorLabelsContain: ["TransientTransactionError"]
-          errorLabelsOmit: ["UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteError"]
 
   - description: write conflict abort
 
@@ -125,7 +125,7 @@ tests:
         result:
           errorCodeName: WriteConflict
           errorLabelsContain: ["TransientTransactionError"]
-          errorLabelsOmit: ["UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteError"]
       - name: commitTransaction
         object: session0
       # Driver ignores "NoSuchTransaction" error.

@@ -44,7 +44,7 @@ tests:
           document:
             _id: 4
         result:
-          errorLabelsOmit: ["TransientTransactionError", "UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["TransientTransactionError", "RetryableWriteError"]
           errorCodeName: Interrupted
       - &assertSessionPinned
         name: assertSessionPinned
@@ -139,7 +139,7 @@ tests:
             _id: 4
         result:
           errorLabelsContain: ["TransientTransactionError"]
-          errorLabelsOmit: ["UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteError"]
       # Session unpins from the first mongos after the insert error and
       # abortTransaction succeeds immediately on any mongos.
       - &assertSessionUnpinned

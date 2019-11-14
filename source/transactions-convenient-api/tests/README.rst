@@ -173,7 +173,7 @@ Callback Raises a Custom Error
 ``````````````````````````````
 
 Write a callback that raises a custom exception or error that does not include
-either UnknownTransactionCommitResult or TransientTransactionError error labels.
+either RetryableWriteError or TransientTransactionError error labels.
 Execute this callback using ``withTransaction`` and assert that the callback's
 error bypasses any retry logic within ``withTransaction`` and is propagated to
 the caller of ``withTransaction``.
@@ -195,7 +195,7 @@ should be checked:
  * If the callback raises an error with the TransientTransactionError label and
    the retry timeout has been exceeded, ``withTransaction`` should propagate the
    error to its caller.
- * If committing raises an error with the UnknownTransactionCommitResult label,
+ * If committing raises an error with the RetryableWriteError label,
    the error is not a write concern timeout, and the retry timeout has been
    exceeded, ``withTransaction`` should propagate the error to its caller.
  * If committing raises an error with the TransientTransactionError label and

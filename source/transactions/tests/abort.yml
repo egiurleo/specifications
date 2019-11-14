@@ -305,7 +305,7 @@ tests:
           document:
             _id: 1
         result:
-          errorLabelsOmit: ["TransientTransactionError", "UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["TransientTransactionError", "RetryableWriteError"]
           # DuplicateKey error code included in the bulk write error message
           # returned by the server
           errorContains: E11000
@@ -319,7 +319,7 @@ tests:
         result:
           errorCodeName: NoSuchTransaction
           errorLabelsContain: ["TransientTransactionError"]
-          errorLabelsOmit: ["UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteError"]
       # abortTransaction must ignore the TransactionAborted and succeed.
       - name: abortTransaction
         object: session0

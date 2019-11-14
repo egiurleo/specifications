@@ -25,7 +25,7 @@ tests:
             - _id: 1
             - _id: 1
         result:
-          errorLabelsOmit: ["TransientTransactionError", "UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["TransientTransactionError", "RetryableWriteError"]
           # DuplicateKey error code included in the bulk write error message
           # returned by the server
           errorContains: E11000
@@ -86,7 +86,7 @@ tests:
         result:
           # Note, the server will return the errorLabel in this case.
           errorLabelsContain: ["TransientTransactionError"]
-          errorLabelsOmit: ["UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteError"]
       - name: abortTransaction
         object: session0
 
@@ -143,7 +143,7 @@ tests:
         result:
           # Note, the server will return the errorLabel in this case.
           errorLabelsContain: ["TransientTransactionError"]
-          errorLabelsOmit: ["UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteError"]
       - name: abortTransaction
         object: session0
 
@@ -200,7 +200,7 @@ tests:
         result:
           # Note, the server will return the errorLabel in this case.
           errorLabelsContain: ["TransientTransactionError"]
-          errorLabelsOmit: ["UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteError"]
       - name: abortTransaction
         object: session0
 
@@ -261,7 +261,7 @@ tests:
         result:
           # Note, the server will return the errorLabel in this case.
           errorLabelsContain: ["TransientTransactionError"]
-          errorLabelsOmit: ["RetryableWriteError", "UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteError"]
 
     expectations:
       - command_started_event:
@@ -315,7 +315,7 @@ tests:
             _id: 1
         result: &transient_label_only
           errorLabelsContain: ["TransientTransactionError"]
-          errorLabelsOmit: ["UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteError"]
       - name: find
         object: collection
         arguments:
@@ -408,7 +408,7 @@ tests:
       collection:
         data: []
 
-  - description: add RetryableWriteError and UnknownTransactionCommitResult labels to connection errors
+  - description: add RetryableWriteError labels to connection errors
 
     failPoint:
       configureFailPoint: failCommand
@@ -431,7 +431,7 @@ tests:
       - name: commitTransaction
         object: session0
         result:
-          errorLabelsContain: ["RetryableWriteError", "UnknownTransactionCommitResult"]
+          errorLabelsContain: ["RetryableWriteError"]
           errorLabelsOmit: ["TransientTransactionError"]
       - name: commitTransaction
         object: session0
@@ -492,7 +492,7 @@ tests:
         data:
           - _id: 1
 
-  - description: add RetryableWriteError and UnknownTransactionCommitResult labels to retryable commit errors
+  - description: add RetryableWriteError labels to retryable commit errors
 
     failPoint:
       configureFailPoint: failCommand
@@ -515,7 +515,7 @@ tests:
       - name: commitTransaction
         object: session0
         result:
-          errorLabelsContain: ["RetryableWriteError", "UnknownTransactionCommitResult"]
+          errorLabelsContain: ["RetryableWriteError"]
           errorLabelsOmit: ["TransientTransactionError"]
       - name: commitTransaction
         object: session0
@@ -576,7 +576,7 @@ tests:
         data:
           - _id: 1
 
-  - description: add RetryableWriteError and UnknownTransactionCommitResult labels to writeConcernError ShutdownInProgress
+  - description: add RetryableWriteError labels to writeConcernError ShutdownInProgress
 
     failPoint:
       configureFailPoint: failCommand
@@ -605,7 +605,7 @@ tests:
       - name: commitTransaction
         object: session0
         result:
-          errorLabelsContain: ["RetryableWriteError", "UnknownTransactionCommitResult"]
+          errorLabelsContain: ["RetryableWriteError"]
           errorLabelsOmit: ["TransientTransactionError"]
       - name: commitTransaction
         object: session0
@@ -668,7 +668,7 @@ tests:
         data:
           - _id: 1
 
-  - description: add UnknownTransactionCommitResult label to writeConcernError WriteConcernFailed
+  - description: add RetryableWriteError label to writeConcernError WriteConcernFailed
 
     failPoint:
       configureFailPoint: failCommand
@@ -697,8 +697,8 @@ tests:
       - name: commitTransaction
         object: session0
         result:
-          errorLabelsContain: ["UnknownTransactionCommitResult"]
-          errorLabelsOmit: ["RetryableWriteError", "TransientTransactionError"]
+          errorLabelsContain: ["RetryableWriteError"]
+          errorLabelsOmit: ["TransientTransactionError"]
       - name: commitTransaction
         object: session0
 
@@ -748,7 +748,7 @@ tests:
         data:
           - _id: 1
 
-  - description: add UnknownTransactionCommitResult label to writeConcernError WriteConcernFailed with wtimeout
+  - description: add RetryableWriteError label to writeConcernError WriteConcernFailed with wtimeout
 
     failPoint:
       configureFailPoint: failCommand
@@ -779,8 +779,8 @@ tests:
       - name: commitTransaction
         object: session0
         result:
-          errorLabelsContain: ["UnknownTransactionCommitResult"]
-          errorLabelsOmit: ["RetryableWriteError", "TransientTransactionError"]
+          errorLabelsContain: ["RetryableWriteError"]
+          errorLabelsOmit: ["TransientTransactionError"]
       - name: commitTransaction
         object: session0
 
@@ -830,7 +830,7 @@ tests:
         data:
           - _id: 1
 
-  - description: omit UnknownTransactionCommitResult label from writeConcernError UnsatisfiableWriteConcern
+  - description: omit RetryableWriteError label from writeConcernError UnsatisfiableWriteConcern
 
     failPoint:
       configureFailPoint: failCommand
@@ -859,7 +859,7 @@ tests:
       - name: commitTransaction
         object: session0
         result:
-          errorLabelsOmit: ["RetryableWriteError", "TransientTransactionError", "UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteError", "TransientTransactionError"]
 
     expectations:
       - command_started_event:
@@ -895,7 +895,7 @@ tests:
         data:
           - _id: 1
 
-  - description: omit UnknownTransactionCommitResult label from writeConcernError UnknownReplWriteConcern
+  - description: omit RetryableWriteError label from writeConcernError UnknownReplWriteConcern
 
     failPoint:
       configureFailPoint: failCommand
@@ -924,7 +924,7 @@ tests:
       - name: commitTransaction
         object: session0
         result:
-          errorLabelsOmit: ["RetryableWriteConcern", "TransientTransactionError", "UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteConcern", "TransientTransactionError"]
 
     expectations:
       - command_started_event:
@@ -960,7 +960,7 @@ tests:
         data:
           - _id: 1
 
-  - description: do not add UnknownTransactionCommitResult label to MaxTimeMSExpired inside transactions
+  - description: do not add RetryableWriteError label to MaxTimeMSExpired inside transactions
 
     failPoint:
       configureFailPoint: failCommand
@@ -989,7 +989,7 @@ tests:
           maxTimeMS: 60000
           session: session0
         result:
-          errorLabelsOmit: ["RetryableWriteError", "UnknownTransactionCommitResult", "TransientTransactionError"]
+          errorLabelsOmit: ["RetryableWriteError", "TransientTransactionError"]
       - name: abortTransaction
         object: session0
 
@@ -1040,7 +1040,7 @@ tests:
       collection:
         data: []
 
-  - description: add UnknownTransactionCommitResult label to MaxTimeMSExpired
+  - description: add RetryableWriteError label to MaxTimeMSExpired
 
     failPoint:
       configureFailPoint: failCommand
@@ -1068,8 +1068,8 @@ tests:
       - name: commitTransaction
         object: session0
         result:
-          errorLabelsContain: ["UnknownTransactionCommitResult"]
-          errorLabelsOmit: ["RetryableWriteError", "TransientTransactionError"]
+          errorLabelsContain: ["RetryableWriteError"]
+          errorLabelsOmit: ["TransientTransactionError"]
       - name: commitTransaction
         object: session0
 
@@ -1121,7 +1121,7 @@ tests:
         data:
           - _id: 1
 
-  - description: add UnknownTransactionCommitResult label to writeConcernError MaxTimeMSExpired
+  - description: add RetryableWriteError label to writeConcernError MaxTimeMSExpired
 
     failPoint:
       configureFailPoint: failCommand
@@ -1151,8 +1151,8 @@ tests:
       - name: commitTransaction
         object: session0
         result:
-          errorLabelsContain: ["UnknownTransactionCommitResult"]
-          errorLabelsOmit: ["RetryableWriteError", "TransientTransactionError"]
+          errorLabelsContain: ["RetryableWriteError"]
+          errorLabelsOmit: ["TransientTransactionError"]
       - name: commitTransaction
         object: session0
 

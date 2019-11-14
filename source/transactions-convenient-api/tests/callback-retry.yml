@@ -158,9 +158,9 @@ tests:
                   session: session0
                   document: { _id: 1 }
                 result:
-                  errorLabelsOmit: ["TransientTransactionError", "UnknownTransactionCommitResult"]
+                  errorLabelsOmit: ["TransientTransactionError", "RetryableWriteError"]
         result:
-          errorLabelsOmit: ["TransientTransactionError", "UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["TransientTransactionError", "RetryableWriteError"]
           # DuplicateKey error code included in the bulk write error message
           # returned by the server
           errorContains: E11000

@@ -140,7 +140,7 @@ tests:
       - <<: *operation
         result:
           errorCodeName: UnknownReplWriteConcern
-          errorLabelsOmit: ["TransientTransactionError", "UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["TransientTransactionError", "RetryableWriteError"]
     expectations: &expectations_without_retries
       -
         command_started_event:
@@ -189,7 +189,7 @@ tests:
       - <<: *operation
         result:
           errorCodeName: UnsatisfiableWriteConcern
-          errorLabelsOmit: ["TransientTransactionError", "UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["TransientTransactionError", "RetryableWriteError"]
     expectations: *expectations_without_retries
     # failCommand with writeConcernError still applies the write operation(s)
     outcome: *outcome
@@ -209,7 +209,7 @@ tests:
       - <<: *operation
         result:
           errorCodeName: MaxTimeMSExpired
-          errorLabelsContain: ["UnknownTransactionCommitResult"]
+          errorLabelsContain: ["RetryableWriteError"]
           errorLabelsOmit: ["TransientTransactionError"]
     expectations: *expectations_without_retries
     # failCommand with writeConcernError still applies the write operation(s)

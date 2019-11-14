@@ -260,7 +260,7 @@ tests:
           #     'errmsg': 'Not enough data-bearing nodes'
           #   }
           # }
-          errorLabelsOmit: ["TransientTransactionError", "UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["TransientTransactionError", "RetryableWriteError"]
 
     outcome:
       collection:

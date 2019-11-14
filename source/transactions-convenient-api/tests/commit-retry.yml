@@ -185,7 +185,7 @@ tests:
         data:
           - { _id: 1 }
   -
-    description: commit is retried after commitTransaction UnknownTransactionCommitResult (NotMaster)
+    description: commit is retried after commitTransaction RetryableWriteError (NotMaster)
     failPoint:
       configureFailPoint: failCommand
       mode: { times: 2 }
@@ -283,7 +283,7 @@ tests:
             maxCommitTimeMS: 60000
         result:
           errorCodeName: MaxTimeMSExpired
-          errorLabelsContain: ["UnknownTransactionCommitResult"]
+          errorLabelsContain: ["RetryableWriteError"]
           errorLabelsOmit: ["TransientTransactionError"]
     expectations:
       -

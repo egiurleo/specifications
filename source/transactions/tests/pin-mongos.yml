@@ -379,7 +379,7 @@ tests:
             _id: 4
         result:
           errorLabelsContain: ["TransientTransactionError"]
-          errorLabelsOmit: ["UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteError"]
       # Session unpins from the first mongos after the insert error and
       # abortTransaction succeeds immediately on any mongos.
       - name: abortTransaction
@@ -485,7 +485,7 @@ tests:
             _id: 4
         result:
           errorLabelsContain: ["TransientTransactionError"]
-          errorLabelsOmit: ["UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteError"]
       # Session unpins from the first mongos after the insert error and
       # commitTransaction selects the second mongos which is unaware of the
       # transaction and therefore fails with NoSuchTransaction error. If this
@@ -501,7 +501,7 @@ tests:
         object: session0
         result:
           errorLabelsContain: ["TransientTransactionError"]
-          errorLabelsOmit: ["UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["RetryableWriteError"]
           errorCodeName: NoSuchTransaction
 
 

@@ -30,7 +30,7 @@ tests:
             _id: 1
         result:
           errorCodeName: OperationNotSupportedInTransaction
-          errorLabelsOmit: ["TransientTransactionError", "UnknownTransactionCommitResult"]
+          errorLabelsOmit: ["TransientTransactionError", "RetryableWriteError"]
       - name: abortTransaction
         object: session0
 
