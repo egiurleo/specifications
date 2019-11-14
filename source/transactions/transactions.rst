@@ -1400,13 +1400,9 @@ This error label indicated that the driver or the application could retry the co
 
 When the RetryableWriteError label was introduced, there were cases where errors that occurred during
 commitTransaction could receive both a RetryableWriteError label and an UnknownTransactionCommitResult
-label. Both of these error labels essentially indicate that the commit should be retried, so the
+label. Both of these error labels indicate that the commit should be retried, so the
 UnknownTransactionCommitResult label was deprecated in favor of the more universal
 RetryableWriteError label.
-
-In version 3.6 of the Retryable Writes specification, the definition of a retryable
-error was changed so that any error with the RetryableWriteError label was
-considered retryable.
 
 **Changelog**
 -------------

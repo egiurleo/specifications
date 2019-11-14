@@ -3,14 +3,14 @@ Convenient API for Transactions
 ===============================
 
 :Spec Title: Convenient API for Transactions
-:Spec Version: 1.2
+:Spec Version: 1.3
 :Author: Jeremy Mikola
 :Lead: Jeff Yemin
 :Advisors: A\. Jesse Jiryu Davis, Kris Brandow, Oleg Pudeyev, Sam Ritter, Tess Avitabile
 :Status: Accepted
 :Type: Standards
 :Minimum Server Version: 4.0
-:Last Modified: 2019-04-24
+:Last Modified: 2019-11-13
 
 .. contents::
 
@@ -503,6 +503,9 @@ client-side operation timeout, withTransaction can continue to use the
 
 Changes
 =======
+
+2019-11-03: UnknownTransactionCommitResult error label replaced by
+            RetryableWriteError label
 
 2019-04-24: withTransaction does not retry when commit fails with
             MaxTimeMSExpired.

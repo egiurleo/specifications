@@ -212,6 +212,8 @@ should be checked:
 Changelog
 =========
 
+:2019-11-13: Replace "UnknownTransactionCommitResult" error label with
+             "RetryableWriteError" label
 :2019-03-01: Add top-level ``runOn`` field to denote server version and/or
              topology requirements requirements for the test file. Removes the
              ``minServerVersion`` top-level field, which is now expressed within
